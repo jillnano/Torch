@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Torch</string>
+    <string name="action_add">追加</string>
+    <string name="action_view">検索</string>
+    <string name="action_today">今日</string>
+    <string name="action_clear">クリア</string>
+
+</resources>

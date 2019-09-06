@@ -1,0 +1,30 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="hermann.ebbinghaus.MainActivity">
+
+    <item
+        android:id="@+id/action_add"
+        android:orderInCategory="100"
+        app:showAsAction="never"
+        android:title="@string/action_add"/>
+
+    <item
+        android:id="@+id/action_view"
+        android:orderInCategory="100"
+        app:showAsAction="never"
+        android:title="@string/action_view"/>
+    
+    <item
+        android:id="@+id/action_today"
+        android:orderInCategory="100"
+        app:showAsAction="never"
+        android:title="@string/action_today"/>
+
+    <item
+        android:id="@+id/action_clear"
+        android:orderInCategory="100"
+        app:showAsAction="never"
+        android:title="@string/action_clear"/>
+    
+</menu>
