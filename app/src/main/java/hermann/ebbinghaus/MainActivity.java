@@ -213,6 +213,12 @@ public class MainActivity extends AppCompatActivity {
 			builder.show();
 			return true;
 		}
+		if (id == R.id.action_test) {
+			Intent intent = new Intent();
+			intent.setClass(getApplicationContext(), TestActivity.class);
+			startActivity(intent);
+			return true;
+		}
 		return super.onOptionsItemSelected(item);
 	}
 }

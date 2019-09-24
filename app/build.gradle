@@ -1,15 +1,28 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.chaquo.python'
 
 android {
     compileSdkVersion 28
     buildToolsVersion '28.0.3'
     defaultConfig {
         applicationId "hermann.ebbinghaus"
-        minSdkVersion 26
+        minSdkVersion 21
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        ndk {
+            abiFilters "armeabi-v7a"
+        }
+        python {
+            buildPython "/Users/wufan/.pyenv/versions/miniconda3-latest/bin/python"
+            pip {
+                install "matplotlib"
+                install "numpy"
+                install "scipy"
+            }
+        }
     }
     buildTypes {
         release {
@@ -36,8 +49,10 @@ dependencies {
 //    implementation 'com.github.scwen7:RichEditor:1.0.1'
     implementation 'com.jph.takephoto:takephoto_library:4.0.3'
     implementation 'com.github.LuckSiege.PictureSelector:picture_library:v2.2.3'
+    implementation 'com.github.adrielcafe:AndroidAudioConverter:0.0.8'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
     implementation project(path: ':RichEditor')
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
 }
