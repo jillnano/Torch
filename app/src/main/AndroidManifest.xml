@@ -49,6 +49,18 @@
         </activity>
 
         <activity
+            android:name=".TorchActivity"
+            android:label="Torch"
+            android:launchMode="singleTask"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity
             android:name=".TestActivity"
             android:label="TEST"
             android:launchMode="singleTask"

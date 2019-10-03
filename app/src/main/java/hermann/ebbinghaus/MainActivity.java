@@ -131,8 +131,8 @@ public class MainActivity extends AppCompatActivity {
 		Date date = new Date(System.currentTimeMillis());
 		String currentDate = simpleDateFormat.format(date);
 		if (dateStr.equals(currentDate)) {
-			ArrayList<TorchData> torchListToday = Utils.selectTorchSqlite(getApplicationContext(), "mem_date", " <= ",  dateStr);
-			for (TorchData pp : torchListToday) {
+			ArrayList<BaseData.TorchData> torchListToday = Utils.selectTorchSqlite(getApplicationContext(), "mem_date", " <= ",  dateStr);
+			for (BaseData.TorchData pp : torchListToday) {
 				Map<String, String> map = new HashMap<String, String>();
 				Log.e("@@@@@", pp.mem_desc);
 				map.put("create_time", pp.create_time);
@@ -141,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
 			}
 			torchListToday.clear();
 			torchListToday = Utils.selectTorchSqlite(getApplicationContext(), "mem_status", " == ", dateStr);
-			for (TorchData pp : torchListToday) {
+			for (BaseData.TorchData pp : torchListToday) {
 				Map<String, String> map = new HashMap<String, String>();
 				Log.e("@@@@@", pp.mem_desc);
 				map.put("create_time", pp.create_time);
@@ -149,8 +149,8 @@ public class MainActivity extends AppCompatActivity {
 				memoryData.add(map);
 			}
 		}
-		ArrayList<TorchData> torchList = Utils.selectTorchSqlite(getApplicationContext(), "create_date", " == ", dateStr);
-		for (TorchData pp : torchList) {
+		ArrayList<BaseData.TorchData> torchList = Utils.selectTorchSqlite(getApplicationContext(), "create_date", " == ", dateStr);
+		for (BaseData.TorchData pp : torchList) {
 			Map<String, String> map = new HashMap<String, String>();
 			Log.e("@@@@@", pp.mem_desc);
 			map.put("create_time", pp.create_time);
@@ -213,12 +213,18 @@ public class MainActivity extends AppCompatActivity {
 			builder.show();
 			return true;
 		}
-		if (id == R.id.action_test) {
+		if (id == R.id.action_torch) {
 			Intent intent = new Intent();
-			intent.setClass(getApplicationContext(), TestActivity.class);
+			intent.setClass(getApplicationContext(), TorchActivity.class);
 			startActivity(intent);
 			return true;
 		}
+//		if (id == R.id.action_test) {
+//			Intent intent = new Intent();
+//			intent.setClass(getApplicationContext(), TestActivity.class);
+//			startActivity(intent);
+//			return true;
+//		}
 		return super.onOptionsItemSelected(item);
 	}
 }

@@ -6,6 +6,6 @@
     <string name="action_view">検索</string>
     <string name="action_today">今日</string>
     <string name="action_clear">クリア</string>
-    <string name="title_activity_test">TestActivity</string>
+    <string name="action_torch">Torch</string>
 
 </resources>

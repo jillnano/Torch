@@ -28,9 +28,15 @@
         android:title="@string/action_clear"/>
 
     <item
-        android:id="@+id/action_test"
-        android:orderInCategory="100"
-        app:showAsAction="never"
-        android:title="test"/>
+    android:id="@+id/action_torch"
+    android:orderInCategory="100"
+    app:showAsAction="never"
+    android:title="@string/action_torch"/>
+
+    <!--<item-->
+        <!--android:id="@+id/action_test"-->
+        <!--android:orderInCategory="100"-->
+        <!--app:showAsAction="never"-->
+        <!--android:title="test"/>-->
 
 </menu>

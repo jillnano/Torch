@@ -22,6 +22,7 @@ import android.hardware.Camera;
 import android.hardware.Camera.Size;
 import android.net.Uri;
 import android.os.Environment;
+import android.util.Base64;
 import android.util.Log;
 
 public class Utils {
@@ -31,7 +32,9 @@ public class Utils {
 	public static final String TORCHFOLDER = Environment.getExternalStorageDirectory() + "/HermannEbbinghaus";
 	public static final String TORCHIMGFOLDER = Environment.getExternalStorageDirectory() + "/HermannEbbinghaus/images";
 	public static final String TORCH = TORCHFOLDER + "/torch";
-	
+	public static final String NETEASEFOLDER = Environment.getExternalStorageDirectory() + "/netease/cloudmusic/Music";
+	public static final String TORCHPEAK = TORCHFOLDER + "/torch_peak";
+
 	private static final String CREAT_CMD = "CREATE TABLE IF NOT EXISTS torch (_id INTEGER PRIMARY KEY AUTOINCREMENT, create_time VARCHAR UNIQUE, create_date INTEGER, mem_date INTEGER, mem_text TEXT, mem_status INTEGER, mem_desc VARCHAR)";
 
 	public static String getFileNameNoEx(String filename) {
@@ -203,7 +206,7 @@ public class Utils {
 		return (int) (pxValue / scale + 0.5f);
 	}
 
-	public static ArrayList<TorchData> selectTorchSqlite(Context context, String key, String op, String select_date) {
+	public static ArrayList<BaseData.TorchData> selectTorchSqlite(Context context, String key, String op, String select_date) {
 		File file = new File(TORCHFOLDER);
 		if (!file.exists()) {
 			file.mkdirs();
@@ -212,7 +215,7 @@ public class Utils {
 		if (!fileImg.exists()) {
 			fileImg.mkdirs();
 		}
-		ArrayList<TorchData> memoryDatas = new ArrayList<TorchData>();
+		ArrayList<BaseData.TorchData> memoryDatas = new ArrayList<BaseData.TorchData>();
 		SQLiteDatabase db = context.openOrCreateDatabase(TORCH, Context.MODE_MULTI_PROCESS, null);
 		db.execSQL(CREAT_CMD);
 		Cursor cur = db.rawQuery("SELECT * FROM torch WHERE " + key + op + "?", new String[] { select_date });
@@ -223,7 +226,7 @@ public class Utils {
 			String mem_text = cur.getString(cur.getColumnIndex("mem_text"));
 			Integer mem_status = cur.getInt(cur.getColumnIndex("mem_status"));
 			String mem_desc = cur.getString(cur.getColumnIndex("mem_desc"));
-			memoryDatas.add(new TorchData(create_time, create_date, mem_date, mem_text, mem_status, mem_desc));
+			memoryDatas.add(new BaseData.TorchData(create_time, create_date, mem_date, mem_text, mem_status, mem_desc));
 		}
 		cur.close();
 		db.close();
@@ -231,7 +234,7 @@ public class Utils {
 	}
 
 
-	public static TorchData selectOneTorchSqlite(Context context, String create_time) {
+	public static BaseData.TorchData selectOneTorchSqlite(Context context, String create_time) {
 		File file = new File(TORCHFOLDER);
 		if (!file.exists()) {
 			file.mkdirs();
@@ -250,14 +253,14 @@ public class Utils {
 			String mem_text = cur.getString(cur.getColumnIndex("mem_text"));
 			Integer mem_status = cur.getInt(cur.getColumnIndex("mem_status"));
 			String mem_desc = cur.getString(cur.getColumnIndex("mem_desc"));
-			return new TorchData(ct, create_date, mem_date, mem_text, mem_status, mem_desc);
+			return new BaseData.TorchData(ct, create_date, mem_date, mem_text, mem_status, mem_desc);
 		}
 		cur.close();
 		db.close();
 		return null;
 	}
 
-	public static void insertTorchSqlite(Context context, TorchData torchData) {
+	public static void insertTorchSqlite(Context context, BaseData.TorchData torchData) {
 		SQLiteDatabase db = context.openOrCreateDatabase(TORCH, Context.MODE_MULTI_PROCESS, null);
 		db.execSQL(CREAT_CMD);
 		ContentValues cv = new ContentValues();
@@ -271,7 +274,7 @@ public class Utils {
 		db.close();
 	}
 
-	public static void updateTorchSqlite(Context context, TorchData torchData) {
+	public static void updateTorchSqlite(Context context, BaseData.TorchData torchData) {
 //		Log.e("@@@@@", torchData.mem_text);
 //		Log.e("@@@@@", torchData.mem_desc);
 //		Log.e("@@@@@", torchData.mem_date + "");
@@ -298,6 +301,21 @@ public class Utils {
 		db.execSQL(CREAT_CMD);
 		db.delete("torch", "create_date = ?", new String[] { create_date });
 		db.close();
+	}
+
+	public static BaseData.TorchPeakData selectMusicSqlite(Context context, String filename) {
+		SQLiteDatabase db = context.openOrCreateDatabase(TORCHPEAK, Context.MODE_MULTI_PROCESS, null);
+		Cursor cur = db.rawQuery("SELECT * FROM torch_encode WHERE filename == ?", new String[] { filename });
+		while (cur.moveToNext()) {
+			String fn = cur.getString(cur.getColumnIndex("filename"));
+			float c0 = cur.getFloat(cur.getColumnIndex("encode_0"));
+			float c1 = cur.getFloat(cur.getColumnIndex("encode_1"));
+			String rn = new String(Base64.decode(fn, Base64.NO_WRAP));
+			return new BaseData.TorchPeakData(fn, rn, c0, c1);
+		}
+		cur.close();
+		db.close();
+		return null;
 	}
 
 	public static boolean copyFile(String oldPath$Name, String newPath$Name) {
@@ -335,6 +353,60 @@ public class Utils {
 			e.printStackTrace();
 			return false;
 		}
+	}
+
+	public static String han2zen(String filename) {
+		filename = filename.replace("が", "が")
+				.replace("ぎ", "ぎ")
+				.replace("ぐ", "ぐ")
+				.replace("げ", "げ")
+				.replace("ご", "ご")
+				.replace("ざ", "ざ")
+				.replace("じ", "じ")
+				.replace("ず", "ず")
+				.replace("ぜ", "ぜ")
+				.replace("ぞ", "ぞ")
+				.replace("だ", "だ")
+				.replace("ぢ", "ぢ")
+				.replace("づ", "づ")
+				.replace("で", "で")
+				.replace("ど", "ど")
+				.replace("ば", "ば")
+				.replace("び", "び")
+				.replace("ぶ", "ぶ")
+				.replace("べ", "べ")
+				.replace("ぼ", "ぼ")
+				.replace("ガ", "ガ")
+				.replace("ギ", "ギ")
+				.replace("グ", "グ")
+				.replace("ゲ", "ゲ")
+				.replace("ゴ", "ゴ")
+				.replace("ザ", "ザ")
+				.replace("ジ", "ジ")
+				.replace("ズ", "ズ")
+				.replace("ゼ", "ゼ")
+				.replace("ゾ", "ゾ")
+				.replace("ダ", "ダ")
+				.replace("ヂ", "ヂ")
+				.replace("ヅ", "ヅ")
+				.replace("デ", "デ")
+				.replace("ド", "ド")
+				.replace("バ", "バ")
+				.replace("ビ", "ビ")
+				.replace("ブ", "ブ")
+				.replace("ベ", "ベ")
+				.replace("ボ", "ボ")
+				.replace("ぱ", "ぱ")
+				.replace("ぴ", "ぴ")
+				.replace("ぷ", "ぷ")
+				.replace("ぺ", "ぺ")
+				.replace("ぽ", "ぽ")
+				.replace("パ", "パ")
+				.replace("ピ", "ピ")
+				.replace("プ", "プ")
+				.replace("ペ", "ペ")
+				.replace("ポ", "ポ");
+		return filename;
 	}
 
 }

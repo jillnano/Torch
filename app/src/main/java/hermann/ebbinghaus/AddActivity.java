@@ -45,7 +45,7 @@ public class AddActivity extends AppCompatActivity implements TakePhoto.TakeResu
 
 	private RichEditer editText;
 	private String status = "0";
-	private TorchData todayData = null;
+	private BaseData.TorchData todayData = null;
 
 	private Button saveButton;
 	private Button imageButton;
@@ -105,8 +105,8 @@ public class AddActivity extends AppCompatActivity implements TakePhoto.TakeResu
 
 	}
 
-	private TorchData setTextContent(String create_time) {
-		TorchData td = Utils.selectOneTorchSqlite(getApplicationContext(), create_time);
+	private BaseData.TorchData setTextContent(String create_time) {
+		BaseData.TorchData td = Utils.selectOneTorchSqlite(getApplicationContext(), create_time);
 		editText.parseHtml(td.mem_text);
 		return td;
 	}
@@ -148,7 +148,7 @@ public class AddActivity extends AppCompatActivity implements TakePhoto.TakeResu
 			} else {
 				desc = editText.getContent().substring(0, 12);
 			}
-			TorchData sqlData = new TorchData(
+			BaseData.TorchData sqlData = new BaseData.TorchData(
 					String.valueOf(ts),
 					Integer.valueOf(cd),
 					Integer.valueOf(md),
