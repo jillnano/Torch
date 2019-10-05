@@ -71,6 +71,16 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".MusicService"
+            android:process=":MusicService"
+            android:launchMode="singleTask" >
+            <intent-filter>
+                <action android:name ="hermann.ebbinghaus.MusicService" />
+            </intent-filter>
+        </service>
+
     </application>
 
 </manifest>
