@@ -11,9 +11,9 @@ interface ITorchAidlInterface {
 //    void basicTypes(int anInt, long aLong, boolean aBoolean, float aFloat,
 //            double aDouble, String aString);
 
-	void setPlayListData();
+	void setPlayListData(in List<String> musicList);
 
-	void startPlay(int cursor);
+	void startPlay();
 
 	int getMusicCurPosition();
 

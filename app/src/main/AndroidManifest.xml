@@ -73,11 +73,11 @@
         </activity>
 
         <service
-            android:name=".MusicService"
-            android:process=":MusicService"
-            android:launchMode="singleTask" >
+            android:name=".PlayService"
+            android:process=":TorchService"
+            android:launchMode="singleInstance" >
             <intent-filter>
-                <action android:name ="hermann.ebbinghaus.MusicService" />
+                <action android:name ="hermann.ebbinghaus.PlayService" />
             </intent-filter>
         </service>
 

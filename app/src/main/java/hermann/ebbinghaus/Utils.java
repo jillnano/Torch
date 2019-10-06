@@ -306,16 +306,18 @@ public class Utils {
 	public static BaseData.TorchPeakData selectMusicSqlite(Context context, String filename) {
 		SQLiteDatabase db = context.openOrCreateDatabase(TORCHPEAK, Context.MODE_MULTI_PROCESS, null);
 		Cursor cur = db.rawQuery("SELECT * FROM torch_encode WHERE filename == ?", new String[] { filename });
+		BaseData.TorchPeakData tpd = null;
 		while (cur.moveToNext()) {
 			String fn = cur.getString(cur.getColumnIndex("filename"));
 			float c0 = cur.getFloat(cur.getColumnIndex("encode_0"));
 			float c1 = cur.getFloat(cur.getColumnIndex("encode_1"));
 			String rn = new String(Base64.decode(fn, Base64.NO_WRAP));
-			return new BaseData.TorchPeakData(fn, rn, c0, c1);
+			tpd = new BaseData.TorchPeakData(fn, rn, c0, c1);
+			break;
 		}
 		cur.close();
 		db.close();
-		return null;
+		return tpd;
 	}
 
 	public static boolean copyFile(String oldPath$Name, String newPath$Name) {

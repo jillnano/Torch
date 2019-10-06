@@ -9,10 +9,14 @@ import java.util.Map;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,6 +35,19 @@ public class MainActivity extends AppCompatActivity {
 	private boolean isView = false;
 	private String currentDate = null;
 
+	private ITorchAidlInterface playService;
+	private ServiceConnection serviceConnection = new ServiceConnection() {
+		@Override
+		public void onServiceConnected(ComponentName name, IBinder service) {
+			playService = ITorchAidlInterface.Stub.asInterface(service);
+		}
+		@Override
+		public void onServiceDisconnected(ComponentName arg0) {
+			playService = null;
+		}
+	};
+
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -41,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
 
 		setContentView(R.layout.activity_main);
 		memoryListView = (ListView) findViewById(R.id.memory_list);
+		this.bindService(new Intent("hermann.ebbinghaus.PlayService").setPackage("hermann.ebbinghaus"), this.serviceConnection, BIND_AUTO_CREATE);
 
 		memoryListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
@@ -84,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
 			}
 		});
 		refresh(null);
+		Log.e("@@@@@", "ONCREATE MainActivity");
 //		memoryListView.setOnItemLongClickListener(rgbListViewOnItemLongClickListener);
 	}
 
@@ -154,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
 			Map<String, String> map = new HashMap<String, String>();
 			Log.e("@@@@@", pp.mem_desc);
 			map.put("create_time", pp.create_time);
-			map.put("mem_desc", "\uD83D\uDD28 | " + pp.mem_desc);
+			map.put("mem_desc", "★ | " + pp.mem_desc);
 			memoryData.add(map);
 		}
 	}
@@ -227,4 +246,20 @@ public class MainActivity extends AppCompatActivity {
 //		}
 		return super.onOptionsItemSelected(item);
 	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			moveTaskToBack(true);
+		}
+		return super.onKeyDown(keyCode, event);
+	}
+
+	@Override
+	protected void onDestroy() {
+		this.unbindService(serviceConnection);
+		Log.e("@@@@@", "onDestroy MainActivity");
+		super.onDestroy();
+	}
+
 }

@@ -1,9 +1,14 @@
 package hermann.ebbinghaus;
 
+import android.content.ComponentName;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Base64;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -25,21 +30,30 @@ import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import static hermann.ebbinghaus.Utils.han2zen;
 import static hermann.ebbinghaus.Utils.selectMusicSqlite;
 
 public class TorchActivity extends AppCompatActivity {
 
-    private String TAG = "@@@@@";
+    private String TAG = "@@@@@TorchActivity";
 
     private ArrayList<BaseData.TorchPeakData> existsList = new ArrayList<>();
+
+    private BaseData.TorchPeakData targetPeakData = null;
 
     private TextView musicTitle;
     private TextView radiusNum;
     private SeekBar seekBar;
     private ScatterChart mScatterChart;
     private Button playButton;
+    private Button stopButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +64,8 @@ public class TorchActivity extends AppCompatActivity {
         seekBar = findViewById(R.id.seekBar);
         mScatterChart = findViewById(R.id.mScatterChart);
         playButton = findViewById(R.id.play_button);
+        stopButton = findViewById(R.id.stop_button);
+
         mScatterChart.setDragEnabled(false);
         mScatterChart.setScaleEnabled(false);
         mScatterChart.getLegend().setEnabled(false);
@@ -60,6 +76,7 @@ public class TorchActivity extends AppCompatActivity {
                 BaseData.TorchPeakData d = (BaseData.TorchPeakData) e.getData();
                 Log.e(TAG, e.getX() + " | " + e.getY());
                 musicTitle.setText(d.realname);
+                targetPeakData = d;
             }
 
             @Override
@@ -87,11 +104,55 @@ public class TorchActivity extends AppCompatActivity {
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                ArrayList<String> musicList = getMusicList();
+                Intent intent = new Intent();
+                Bundle bundle = new Bundle();// 创建 email 内容
+                bundle.putStringArrayList("musicList", musicList);
+                intent.putExtra("playExtra", bundle);
+                intent.setAction("PlayService.StartToPlay");
+                sendBroadcast(intent);
+            }
+        });
+        stopButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent();
+                intent.setAction("PlayService.StopPlay");
+                sendBroadcast(intent);
             }
         });
         initExistsList();
         setData();
+        Log.e(TAG, "onCreate TorchActivity");
+    }
+
+    private ArrayList<String> getMusicList(){
+        int size = Integer.valueOf(radiusNum.getText().toString());
+        ArrayList<String> musicList = new ArrayList<>();
+        TreeMap<String, Float> musicMap = new TreeMap<>();
+        for (BaseData.TorchPeakData t : existsList){
+            float v = ((t.encode_0 - targetPeakData.encode_0) * (t.encode_0 - targetPeakData.encode_0)) +
+                    ((t.encode_1 - targetPeakData.encode_1) * (t.encode_1 - targetPeakData.encode_1));
+            musicMap.put(t.filepath, v);
+        }
+        List<Map.Entry<String, Float>> list = new ArrayList<>(musicMap.entrySet());
+
+        Collections.sort(list, new Comparator<Map.Entry<String, Float>>() {
+            //升序排序
+            @Override
+            public int compare(Map.Entry<String, Float> o1, Map.Entry<String, Float> o2) {
+                return o1.getValue().compareTo(o2.getValue());
+            }
+        });
+        for (Map.Entry<String, Float> e: list) {
+            musicList.add(e.getKey());
+            if (musicList.size() >= size) {
+                break;
+            }
+            Log.e(TAG, e.getKey()+":"+e.getValue());
+        }
+        Log.e(TAG, targetPeakData.filepath+"|||");
+        return musicList;
     }
 
     private void initExistsList() {
@@ -108,7 +169,11 @@ public class TorchActivity extends AppCompatActivity {
                 }
             }
         }
-        Log.e(TAG, "total: " + musicFile.listFiles().length + "; exists: " + existsList.size() + "|" + existsList);
+        Collections.shuffle(existsList);
+        if (targetPeakData == null) {
+            targetPeakData = existsList.get(0);
+        }
+        Log.e(TAG, "total: " + musicFile.listFiles().length + "; exists: " + existsList.size());
     }
 
 
@@ -136,5 +201,19 @@ public class TorchActivity extends AppCompatActivity {
         mScatterChart.setData(data);
         mScatterChart.invalidate();
     }
+
+    @Override
+    protected void onDestroy() {
+        Log.e("@@@@@", "onDestroy TorchActivity");
+        super.onDestroy();
+    }
+
+//    @Override
+//    public boolean onKeyDown(int keyCode, KeyEvent event) {
+//        if (keyCode == KeyEvent.KEYCODE_BACK) {
+//            moveTaskToBack(false);
+//        }
+//        return super.onKeyDown(keyCode, event);
+//    }
 
 }
