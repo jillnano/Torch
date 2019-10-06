@@ -87,7 +87,8 @@ public class PlayService extends Service {
                 Bundle bundle = intent.getBundleExtra("playExtra");
                 startToPlay(bundle.getStringArrayList("musicList"));
             } else if (action.equals("PlayService.StopPlay")) {
-                pausePlay();
+//                pausePlay();
+                playOrPause();
             }
         }
     };
@@ -136,6 +137,8 @@ public class PlayService extends Service {
         intentFilter.addAction("PlayService.PlayPrev");
         intentFilter.addAction("PlayService.PlayOrPause");
         intentFilter.addAction("PlayService.ItemClickPlay");
+        intentFilter.addAction("PlayService.StartToPlay");
+        intentFilter.addAction("PlayService.StopPlay");
         intentFilter.addAction("android.intent.action.PHONE_STATE");
         intentFilter.addAction("android.intent.action.NEW_OUTGOING_CALL");
         intentFilter.addAction(Intent.ACTION_HEADSET_PLUG);
@@ -190,12 +193,12 @@ public class PlayService extends Service {
     }
 
     public boolean playNext() {
-        if (currentIdx == 0){
-            currentIdx++;
-            play();
-        } else {
-            play();
+        currentIdx++;
+        if (currentIdx >= playList.size()) {
+            currentIdx = 0;
+            Collections.shuffle(playList);
         }
+        play();
         return true;
     }
 
@@ -215,15 +218,12 @@ public class PlayService extends Service {
 //    }
 
     private void setToPlay() throws Exception {
-        if (currentIdx >= playList.size()){
-            currentIdx = 0;
-            Collections.shuffle(playList);
-        }
 //        int playCursor = curPlayList.getPlayCursor();
 //        curPlayList.getMusicList().get(playCursor).setStatus(PlayValues.Playing);
         mAsukaPlayer.stop();
         mAsukaPlayer.reset();
 //        mAsukaPlayer.setDataSource(this.getDataSource(playCursor));
+        Log.e(TAG, playList.get(currentIdx));
         mAsukaPlayer.setDataSource(playList.get(currentIdx));
         mAsukaPlayer.prepare();
         mAsukaPlayer.start();
@@ -235,11 +235,7 @@ public class PlayService extends Service {
         playList = musicList;
         Log.e(TAG, playList.toString());
         Collections.shuffle(playList);
-        try {
-            setToPlay();
-        }catch (Exception e){
-            Log.e("@@@@@", e.getMessage());
-        }
+        play();
     }
 
     @Override

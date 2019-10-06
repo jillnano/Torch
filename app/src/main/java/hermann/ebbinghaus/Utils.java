@@ -411,4 +411,32 @@ public class Utils {
 		return filename;
 	}
 
+	public static String ToDBC(String input) {
+		char c[] = input.toCharArray();
+		for (int i = 0; i < c.length; i++) {
+			if (c[i] == 12288) {
+				c[i] = 32;
+			} else if (c[i] >= 65281 && c[i] <= 65374) {
+				c[i] = (char) (c[i] - 65248);
+			}
+		}
+		String returnString = new String(c);
+		return returnString;
+	}
+
+	public static String formatFilename(String content) {
+		content = han2zen(content);
+		content = ToDBC(content);
+		String symbol = "\"'“”，,.";
+		StringBuilder result = new StringBuilder();
+		for (int i = 0; i < content.length(); i++) {
+			String s = content.substring(i, i+1);
+			s = s.trim();
+			if (!s.equals("") && !symbol.contains(s)) {
+				result.append(s);
+			}
+		}
+		return result.toString();
+	}
+
 }

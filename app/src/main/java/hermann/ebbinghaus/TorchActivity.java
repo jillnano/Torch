@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import static hermann.ebbinghaus.Utils.han2zen;
+import static hermann.ebbinghaus.Utils.formatFilename;
 import static hermann.ebbinghaus.Utils.selectMusicSqlite;
 
 public class TorchActivity extends AppCompatActivity {
@@ -160,12 +160,14 @@ public class TorchActivity extends AppCompatActivity {
         existsList.clear();
         for (File f : musicFile.listFiles()) {
             if (f.getName().endsWith(".mp3")) {
-                String fn = Base64.encodeToString(han2zen(f.getName().replace(".mp3", "")).getBytes(), Base64.NO_WRAP);
+                String fn = Base64.encodeToString(formatFilename(f.getName().replace(".mp3", "")).getBytes(), Base64.NO_WRAP);
 //                fn = fn.trim();
                 BaseData.TorchPeakData tp = selectMusicSqlite(getApplicationContext(), fn);
                 if (tp != null) {
                     tp.filepath = f.getAbsolutePath();
                     existsList.add(tp);
+                } else {
+//                    Log.e(TAG, fn);
                 }
             }
         }
