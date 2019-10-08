@@ -24,6 +24,18 @@
             android:visibility="invisible"
             android:text="TORCH" />
 
+        <Button
+            android:id="@+id/play_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="スタート" />
+
+        <Button
+            android:id="@+id/stop_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="ストップ" />
+
         <TextView
             android:id="@+id/radius"
             android:layout_width="match_parent"
@@ -37,18 +49,6 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="3" />
-
-        <Button
-            android:id="@+id/play_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="スタート" />
-
-        <Button
-            android:id="@+id/stop_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="ストップ" />
     </LinearLayout>
 
 </LinearLayout>
