@@ -1,5 +1,5 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.chaquo.python'
+//apply plugin: 'com.chaquo.python'
 
 android {
     compileSdkVersion 28
@@ -15,14 +15,14 @@ android {
         ndk {
             abiFilters "armeabi-v7a"
         }
-        python {
-            buildPython "/Users/wufan/.pyenv/versions/miniconda3-latest/bin/python"
-            pip {
-                install "matplotlib"
-                install "numpy"
-                install "scipy"
-            }
-        }
+//        python {
+//            buildPython "/Users/wufan/.pyenv/versions/miniconda3-latest/bin/python"
+//            pip {
+//                install "matplotlib"
+//                install "numpy"
+//                install "scipy"
+//            }
+//        }
     }
     buildTypes {
         release {

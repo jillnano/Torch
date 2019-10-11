@@ -1,10 +1,12 @@
 package hermann.ebbinghaus;
 
 import android.app.Service;
+import android.bluetooth.BluetoothA2dp;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -89,6 +91,10 @@ public class PlayService extends Service {
             } else if (action.equals("PlayService.StopPlay")) {
 //                pausePlay();
                 playOrPause();
+            } else if (action.equals(Intent.ACTION_HEADSET_PLUG)) {
+                pausePlay();
+            } else if (action.equals(AudioManager.ACTION_AUDIO_BECOMING_NOISY)) {
+                pausePlay();
             }
         }
     };
@@ -97,19 +103,17 @@ public class PlayService extends Service {
         @Override
         public void onCallStateChanged(int state, String incomingNumber) {
             super.onCallStateChanged(state, incomingNumber);
-            if (stateBeforePhoneCall == 0) {
-                stateBeforePhoneCall = mAsukaPlayer.isPlaying() ? 1 : 2;
-            }
-            switch (state) {
-                case TelephonyManager.CALL_STATE_IDLE:// 挂断
-                    if (stateBeforePhoneCall == 1) {
-                        startPlay();
-                    }
-                    stateBeforePhoneCall = 0;
-                case TelephonyManager.CALL_STATE_OFFHOOK:// 接听
-                    pausePlay();
-                case TelephonyManager.CALL_STATE_RINGING:// 响铃
-                    pausePlay();
+
+            if (state == TelephonyManager.CALL_STATE_IDLE) {
+                if (stateBeforePhoneCall == 1) {
+                    startPlay();
+                }
+                stateBeforePhoneCall = 0;
+            } else {
+                if (stateBeforePhoneCall == 0 ) {
+                    stateBeforePhoneCall = mAsukaPlayer.isPlaying() ? 1 : 2;
+                }
+                pausePlay();
             }
         }
     };
@@ -140,8 +144,9 @@ public class PlayService extends Service {
         intentFilter.addAction("PlayService.StartToPlay");
         intentFilter.addAction("PlayService.StopPlay");
         intentFilter.addAction("android.intent.action.PHONE_STATE");
-        intentFilter.addAction("android.intent.action.NEW_OUTGOING_CALL");
+        intentFilter.addAction(Intent.ACTION_NEW_OUTGOING_CALL);
         intentFilter.addAction(Intent.ACTION_HEADSET_PLUG);
+        intentFilter.addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
         registerReceiver(mBroadcastReceiver, intentFilter);
     }
 
